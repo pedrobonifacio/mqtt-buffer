@@ -18,13 +18,17 @@ update_config_for_pst() {
     if [ -n "$KVMD_PST_DATA" ]; then
         echo "Using PiKVM persistent storage: $KVMD_PST_DATA"
         
-        # Create a temporary config with updated paths
+        # Create a temporary config with updated paths using sed instead of jq
         TEMP_CONFIG=$(mktemp)
-        jq --arg buffer_file "$BUFFER_FILE" \
-           '.buffer.persist_file = $buffer_file' \
-           "$CONFIG_FILE" > "$TEMP_CONFIG"
-        
-        CONFIG_FILE="$TEMP_CONFIG"
+        if sed "s|\"persist_file\": \"[^\"]*\"|\"persist_file\": \"$BUFFER_FILE\"|g" \
+            "$CONFIG_FILE" > "$TEMP_CONFIG" 2>/dev/null; then
+            CONFIG_FILE="$TEMP_CONFIG"
+            echo "Configuration updated for PST path"
+        else
+            echo "Warning: Could not update config file, using original"
+            rm -f "$TEMP_CONFIG"
+            TEMP_CONFIG=""
+        fi
     else
         echo "Warning: Not running under kvmd-pstrun, using /tmp"
     fi
@@ -53,10 +57,11 @@ main() {
         BUFFER_SIZE=$(stat -f%z "$BUFFER_FILE" 2>/dev/null || stat -c%s "$BUFFER_FILE" 2>/dev/null || echo "unknown")
         echo "Existing buffer file size: $BUFFER_SIZE bytes"
         
-        # Count messages in buffer if possible
-        if command -v jq &> /dev/null; then
-            MESSAGE_COUNT=$(jq length "$BUFFER_FILE" 2>/dev/null || echo "unknown")
-            echo "Messages in buffer: $MESSAGE_COUNT"
+        # Simple check if buffer has content
+        if [ -r "$BUFFER_FILE" ] && [ -s "$BUFFER_FILE" ]; then
+            echo "Buffer file contains data"
+        else
+            echo "Buffer file is empty or unreadable"
         fi
     else
         echo "No existing buffer file found"
@@ -66,8 +71,21 @@ main() {
     export MQTT_BUFFER_CONFIG="$CONFIG_FILE"
     export MQTT_BUFFER_PST_PATH="$KVMD_PST_DATA"
     
+    # Check if the mqtt-buffer binary exists
+    if [ ! -f "$SCRIPT_DIR/mqtt-buffer" ]; then
+        echo "Error: mqtt-buffer binary not found at $SCRIPT_DIR/mqtt-buffer"
+        exit 1
+    fi
+    
+    if [ ! -x "$SCRIPT_DIR/mqtt-buffer" ]; then
+        echo "Error: mqtt-buffer binary is not executable"
+        exit 1
+    fi
+    
     # Run the actual service
     echo "Starting MQTT buffer service..."
+    echo "Binary: $SCRIPT_DIR/mqtt-buffer"
+    echo "Config: $CONFIG_FILE"
     exec "$SCRIPT_DIR/mqtt-buffer"
 }
 
