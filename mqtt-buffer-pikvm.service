@@ -1,0 +1,35 @@
+[Unit]
+Description=MQTT Buffer Service for PiKVM
+Documentation=https://github.com/pedrobonifacio/mqtt-buffer
+After=network.target kvmd.service
+Wants=network-online.target
+Requires=kvmd.service
+
+[Service]
+Type=simple
+User=root
+Group=kvmd-pst
+WorkingDirectory=/opt/mqtt-buffer
+# Use kvmd-pstrun to access persistent storage
+ExecStart=/usr/bin/kvmd-pstrun -- /opt/mqtt-buffer/pikvm-wrapper.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mqtt-buffer
+
+# Security settings (relaxed for PiKVM compatibility)
+NoNewPrivileges=false
+PrivateTmp=false
+ProtectSystem=false
+ProtectHome=false
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Environment
+Environment=GOMAXPROCS=1
+
+[Install]
+WantedBy=multi-user.target

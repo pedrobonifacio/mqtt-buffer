@@ -1,0 +1,140 @@
+
+2025/09/19 18:10:45 Buffer stats: map[backoff_count:0 circuit_breaker:closed last_flush:2025-09-19 18:07:26.181077 -0300 -03 m=+21280.408345209 pending_messages:0 total_messages:0]
+2025/09/19 18:11:15 Sending batch of 1 messages
+2025/09/19 18:11:15 Buffer stats: map[backoff_count:0 circuit_breaker:closed last_flush:2025-09-19 18:07:26.181077 -0300 -03 m=+21280.408345209 pending_messages:1 total_messages:1]
+2025/09/19 18:11:16 Successfully sent 1 messages
+2025/09/19 18:11:25 Sending batch of 1 messages
+2025/09/19 18:11:26 Successfully sent 1 messages
+2025/09/19 18:11:45 Buffer stats: map[backoff_count:0 circuit_breaker:closed last_flush:2025-09-19 18:11:26.460373 -0300 -03 m=+21520.693158668 pending_messages:0 total_messages:0]
+2025/09/19 18:12:15 Buffer stats: map[backoff_count:0 circuit_breaker:closed last_flush:2025-09-19 18:11:26.460373 -0300 -03 m=+21520.693158668 pending_messages:0 total_messages:0]
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [select (no cases), 345 minutes]:
+main.main()
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:537 +0x584
+
+goroutine 14 [sync.RWMutex.RLock, 10 minutes]:
+sync.runtime_SemacquireRWMutexR(0x140000a9bf8?, 0x44?, 0x100c65710?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/sema.go:100 +0x28
+sync.(*RWMutex).RLock(...)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/rwmutex.go:74
+main.(*Buffer).GetPendingMessages(0x1400010e960)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:103 +0x80
+main.(*Buffer).FlushToAPI(0x1400010e960)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:129 +0x44
+main.bufferFlushRoutine(0x0?)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:593 +0x80
+created by main.main in goroutine 1
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:527 +0x4ec
+
+goroutine 4 [sync.Mutex.Lock, 6 minutes]:
+internal/sync.runtime_SemacquireMutex(0x14000207c88?, 0x0?, 0x140000a5ce8?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/sema.go:95 +0x28
+internal/sync.(*Mutex).lockSlow(0x1400010e978)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/internal/sync/mutex.go:149 +0x170
+internal/sync.(*Mutex).Lock(...)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x1400010e978)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/rwmutex.go:150 +0x74
+main.(*Buffer).Add(0x1400010e960, {{0x1400009a020, 0x19}, 0x1400017e420, {0xc22b8fe88cfd5910, 0x13d69bc6a8ac, 0x1011a40a0}, {0x0, 0x0}, 0x0})
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:82 +0x60
+main.handleGenericMessage({0x100eeccb8?, 0x0?}, {0x100f95150, 0x1400015a050})
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:582 +0x1a0
+github.com/eclipse/paho%2emqtt%2egolang.(*router).matchAndDispatch.func2()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/router.go:198 +0x7a0
+created by github.com/eclipse/paho%2emqtt%2egolang.(*router).matchAndDispatch in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/router.go:156 +0x178
+
+goroutine 6 [chan receive]:
+github.com/eclipse/paho%2emqtt%2egolang.(*client).startCommsWorkers.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:666 +0x260
+created by github.com/eclipse/paho%2emqtt%2egolang.(*client).startCommsWorkers in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:648 +0x6f0
+
+goroutine 7 [chan send, 2 minutes]:
+github.com/eclipse/paho%2emqtt%2egolang.startIncoming.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:136 +0xd4
+created by github.com/eclipse/paho%2emqtt%2egolang.startIncoming in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:122 +0x138
+
+goroutine 8 [chan send, 2 minutes]:
+github.com/eclipse/paho%2emqtt%2egolang.startIncomingComms.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:224 +0x6e0
+created by github.com/eclipse/paho%2emqtt%2egolang.startIncomingComms in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:164 +0x1a4
+
+goroutine 9 [select, 345 minutes]:
+github.com/eclipse/paho%2emqtt%2egolang.startOutgoingComms.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:277 +0x168
+created by github.com/eclipse/paho%2emqtt%2egolang.startOutgoingComms in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:264 +0x204
+
+goroutine 10 [chan send, 2 minutes]:
+github.com/eclipse/paho%2emqtt%2egolang.startComms.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:417 +0x9c
+created by github.com/eclipse/paho%2emqtt%2egolang.startComms in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:406 +0x1b4
+
+goroutine 11 [chan receive, 345 minutes]:
+github.com/eclipse/paho%2emqtt%2egolang.startComms.func2()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:430 +0x64
+created by github.com/eclipse/paho%2emqtt%2egolang.startComms in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:429 +0x214
+
+goroutine 12 [sync.WaitGroup.Wait, 345 minutes]:
+sync.runtime_SemacquireWaitGroup(0x0?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/sema.go:110 +0x2c
+sync.(*WaitGroup).Wait(0x1400000e0e0)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/waitgroup.go:118 +0x70
+github.com/eclipse/paho%2emqtt%2egolang.startComms.func3()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:438 +0x28
+created by github.com/eclipse/paho%2emqtt%2egolang.startComms in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/net.go:437 +0x264
+
+goroutine 13 [select, 2 minutes]:
+github.com/eclipse/paho%2emqtt%2egolang.(*client).startCommsWorkers.func2()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:697 +0x2bc
+created by github.com/eclipse/paho%2emqtt%2egolang.(*client).startCommsWorkers in goroutine 35
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:681 +0x824
+
+goroutine 15 [sync.RWMutex.RLock, 10 minutes]:
+sync.runtime_SemacquireRWMutexR(0x108?, 0xe0?, 0x1?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/sema.go:100 +0x28
+sync.(*RWMutex).RLock(...)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/rwmutex.go:74
+main.(*Buffer).GetPendingMessages(0x1400010e960)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:103 +0x80
+main.(*Buffer).GetStats(0x1400010e960)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:332 +0x110
+main.statsRoutine(0x0?)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:605 +0x70
+created by main.main in goroutine 1
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:530 +0x528
+
+goroutine 16 [sync.RWMutex.Lock, 10 minutes]:
+sync.runtime_SemacquireRWMutex(0x1400020a000?, 0xe8?, 0x206d01?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/sema.go:105 +0x28
+sync.(*RWMutex).Lock(0x1400010e978?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/rwmutex.go:155 +0xfc
+main.cleanupRoutine(0x0?, 0x4e94914f0000)
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:616 +0xa4
+created by main.main in goroutine 1
+	/Users/pedrobonifacio/Documents/Engineering/mqtt-buffer/main.go:533 +0x580
+
+goroutine 1048 [chan receive]:
+github.com/eclipse/paho%2emqtt%2egolang.(*client).internalConnLost.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:562 +0xbc
+created by github.com/eclipse/paho%2emqtt%2egolang.(*client).internalConnLost in goroutine 3
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:560 +0x2c4
+
+goroutine 1047 [sync.WaitGroup.Wait]:
+sync.runtime_SemacquireWaitGroup(0x14000157f88?)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/runtime/sema.go:110 +0x2c
+sync.(*WaitGroup).Wait(0x14000174eb0)
+	/opt/homebrew/Cellar/go/1.24.2/libexec/src/sync/waitgroup.go:118 +0x70
+github.com/eclipse/paho%2emqtt%2egolang.(*client).stopCommsWorkers.func1()
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:757 +0xa4
+created by github.com/eclipse/paho%2emqtt%2egolang.(*client).stopCommsWorkers in goroutine 3
+	/Users/pedrobonifacio/go/pkg/mod/github.com/eclipse/paho.mqtt.golang@v1.5.1/client.go:755 +0x1f8

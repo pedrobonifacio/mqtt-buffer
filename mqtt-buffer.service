@@ -1,0 +1,34 @@
+[Unit]
+Description=MQTT Buffer Service
+Documentation=https://github.com/your-org/mqtt-buffer
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mqtt-buffer
+Group=mqtt-buffer
+WorkingDirectory=/opt/mqtt-buffer
+ExecStart=/opt/mqtt-buffer/mqtt-buffer
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mqtt-buffer
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/tmp /var/lib/mqtt-buffer
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Environment
+Environment=GOMAXPROCS=2
+
+[Install]
+WantedBy=multi-user.target
