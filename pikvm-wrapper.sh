@@ -21,15 +21,15 @@ update_config_for_pst() {
     if [ -n "$KVMD_PST_DATA" ]; then
         echo "Using PiKVM persistent storage: $KVMD_PST_DATA"
         
-        # Create a temporary config with updated paths using sed
-        TEMP_CONFIG=$(mktemp)
+        # Create a temporary config in PST area instead of root filesystem
+        TEMP_CONFIG="$KVMD_PST_DATA/mqtt-buffer-config.tmp"
         if sed "s|\"persist_file\": \"[^\"]*\"|\"persist_file\": \"$BUFFER_FILE\"|g" \
             "$CONFIG_FILE" > "$TEMP_CONFIG" 2>/dev/null; then
             CONFIG_FILE="$TEMP_CONFIG"
             echo "Configuration updated for PST path"
         else
             echo "Warning: Could not update config file, using original"
-            rm -f "$TEMP_CONFIG"
+            rm -f "$TEMP_CONFIG" 2>/dev/null || true
             TEMP_CONFIG=""
         fi
     else
@@ -63,9 +63,9 @@ cleanup() {
         echo "Service stopped"
     fi
     
-    # Clean up temporary config
+    # Clean up temporary config (in PST area, so it's safe)
     if [ -n "$TEMP_CONFIG" ] && [ -f "$TEMP_CONFIG" ]; then
-        rm -f "$TEMP_CONFIG"
+        rm -f "$TEMP_CONFIG" 2>/dev/null || true
         echo "Temporary config cleaned up"
     fi
     
